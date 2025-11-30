@@ -58,6 +58,9 @@ package graphics_pkg is
     constant FIXED_ONE : fixed_point := x"00010000";  -- 1.0 in Q16.16
     constant FIXED_ZERO : fixed_point := x"00000000"; -- 0.0
     constant FIXED_HALF : fixed_point := x"00008000"; -- 0.5
+    -- Screen dimensions
+    constant SCREEN_WIDTH : integer := 256; -- THESE ARE BOTH SUBJECT TO CHANGE BASED ON TV
+    constant SCREEN_HEIGHT : integer := 240; -- OR MONITOR 
     
     -- Functions
     function to_fixed(value : real) return fixed_point;
