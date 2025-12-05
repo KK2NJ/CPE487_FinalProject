@@ -20,10 +20,14 @@ begin
     theta_half <= '0' & theta(7 downto 1);  -- theta * 0.5
     
     trig_full: entity work.trig_lut
-        port map(theta, sin_theta, cos_theta);
+        port map(angle => theta,
+                 sin_out => sin_theta,
+                 cos_out => cos_theta);
     
-    trig_half: entity work.trig_lut
-        port map(theta_half, sin_half, cos_half);
+--    trig_half: entity work.trig_lut
+--        port map(theta_half =>,
+--                 sin_half =>,
+--                 cos_half => );
     
     process(clk)
     begin

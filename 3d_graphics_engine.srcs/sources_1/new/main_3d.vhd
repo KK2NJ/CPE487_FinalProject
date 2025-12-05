@@ -5,20 +5,34 @@ use work.graphics_pkg.all;
 
 entity graphics_engine_3d is
     port (
-        clk             : in  std_logic;
+        clk_in          : in std_logic; -- 100 MHz clock 
+       -- clk             : out  std_logic; -- don't know if this is needed, changed from in to out 
         reset           : in  std_logic;
         enable          : in  std_logic;
+        VGA_red : OUT STD_LOGIC_VECTOR (3 DOWNTO 0); -- VGA outputs
+        VGA_green : OUT STD_LOGIC_VECTOR (3 DOWNTO 0);
+        VGA_blue : OUT STD_LOGIC_VECTOR (3 DOWNTO 0);
+        VGA_hsync : OUT STD_LOGIC;
+        VGA_vsync : OUT STD_LOGIC   
         
         -- Output: Screen coordinates for line drawing
-        vertex_valid    : out std_logic;
-        vertex_x        : out unsigned(7 downto 0);  -- 0-255
-        vertex_y        : out unsigned(7 downto 0);  -- 0-239
-        triangle_done   : out std_logic;
-        frame_done      : out std_logic
+--        vertex_valid    : out std_logic;
+--        vertex_x        : out unsigned(7 downto 0);  -- 0-255
+--        vertex_y        : out unsigned(7 downto 0);  -- 0-239
+--        triangle_done   : out std_logic;
+--        frame_done      : out std_logic
     );
 end entity graphics_engine_3d;
 
 architecture rtl of graphics_engine_3d is
+
+
+    -- Screen Coordinates signals
+    signal vertex_valid : std_logic;
+    signal vertex_x : unsigned(7 downto 0);  -- 0-255
+    signal vertex_y : unsigned(7 downto 0);  -- 0-239
+    signal triangle_done : std_logic;
+    signal frame_done : std_logic;
     -- FSM States
     type state_type is (IDLE, FETCH_TRIANGLE, ROTATE_Z, ROTATE_X, TRANSLATE, 
                         PROJECT, VIEWPORT, OUTPUT_V0, OUTPUT_V1, OUTPUT_V2, NEXT_TRI);
@@ -44,28 +58,85 @@ architecture rtl of graphics_engine_3d is
     -- Vertex processing counter
     signal vertex_idx : integer range 0 to 2 := 0;
     
+    -- clk_in
+    
+    signal pxl_clk : std_logic;
+    
+    -- signals for vga_sync
+    
+    SIGNAL S_red, S_green, S_blue : STD_LOGIC; --_VECTOR (3 DOWNTO 0);
+    SIGNAL S_vsync : STD_LOGIC;
+    SIGNAL S_pixel_row, S_pixel_col : STD_LOGIC_VECTOR (10 DOWNTO 0);
+    
+    
+    
 begin
+--    COMPONENT clk_wiz_0 is
+--        PORT (
+--            clk_in1  : in std_logic;
+--            clk_out1 : out std_logic
+--        );
+--    END COMPONENT;
+
+    
+    vga_driver : entity work.vga_sync
+    PORT MAP(--instantiate vga_sync component
+        pixel_clk => pxl_clk, 
+        red_in => S_red & "000", 
+        green_in => S_green & "000", 
+        blue_in => S_blue & "000", 
+        red_out => VGA_red, 
+        green_out => VGA_green, 
+        blue_out => VGA_blue, 
+        pixel_row => S_pixel_row, 
+        pixel_col => S_pixel_col, 
+        hsync => VGA_hsync, 
+        vsync => S_vsync
+    );
+    VGA_vsync <= S_vsync; --connect output vsync
+    
+    clk_wiz_0_inst : entity work.clk_wiz_0
+    port map (
+      clk_in1 => clk_in,
+      clk_out1 => pxl_clk
+    );
+    
+      
+    
+    -- clk <= pxl_clk;
     -- Instantiate mesh ROM
     mesh: entity work.mesh_rom
-        port map(clk, tri_counter, current_tri);
+        port map(clk => pxl_clk,
+         tri_index => tri_counter, 
+         triangle_out => current_tri);
     
     -- Instantiate rotation matrix generator
     rot_gen: entity work.rotation_matrix_gen
-        port map(clk, theta_counter, mat_rot_z, mat_rot_x);
+        port map(clk => pxl_clk,
+                 theta => theta_counter,
+                 mat_rot_z => mat_rot_z,
+                 mat_rot_x => mat_rot_x);
     
     -- Instantiate matrix-vector multiplier
     mat_mult: entity work.matrix_vector_mult
-        port map(clk, reset, mat_mult_enable, mat_mult_matrix, 
-                 mat_mult_vec_in, mat_mult_vec_out, mat_mult_w, mat_mult_valid);
+        port map(clk  => pxl_clk, 
+                reset => reset,
+                enable => mat_mult_enable,
+                matrix => mat_mult_matrix, 
+                vec_in => mat_mult_vec_in,
+                vec_out => mat_mult_vec_out,
+                w_out => mat_mult_w, 
+                valid => mat_mult_valid
+                );
     
     -- Build projection matrix (constant for now)
-    process(clk)
+    process(pxl_clk)
         constant F_NEAR : real := 0.1;
         constant F_FAR : real := 1000.0;
         constant F_FOV : real := 90.0;
         constant ASPECT : real := real(SCREEN_HEIGHT) / real(SCREEN_WIDTH);
     begin
-        if rising_edge(clk) then
+        if rising_edge(pxl_clk) then
             if reset = '1' then
                 -- Initialize projection matrix
                 mat_proj(0,0) <= to_fixed(ASPECT * 1.0);  -- Simplified
@@ -79,11 +150,11 @@ begin
     end process;
     
     -- Main control FSM
-    process(clk)
+    process(clk_in)
         variable temp_vec : vec3d;
         variable screen_x, screen_y : signed(31 downto 0);
     begin
-        if rising_edge(clk) then
+        if rising_edge(clk_in) then
             if reset = '1' then
                 state <= IDLE;
                 tri_counter <= (others => '0');
