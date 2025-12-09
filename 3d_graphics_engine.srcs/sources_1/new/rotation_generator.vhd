@@ -24,10 +24,10 @@ begin
                  sin_out => sin_theta,
                  cos_out => cos_theta);
     
---    trig_half: entity work.trig_lut
---        port map(theta_half =>,
---                 sin_half =>,
---                 cos_half => );
+    trig_half: entity work.trig_lut
+        port map(angle => theta,
+                 sin_out => sin_theta,
+                 cos_out => cos_theta);
     
     process(clk)
     begin

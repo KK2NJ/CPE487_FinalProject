@@ -129,7 +129,7 @@ begin
                 valid => mat_mult_valid
                 );
     
-    -- Build projection matrix (constant for now)
+    --Build projection matrix (constant for now)
     process(pxl_clk)
         constant F_NEAR : real := 0.1;
         constant F_FAR : real := 1000.0;
@@ -148,13 +148,15 @@ begin
             end if;
         end if;
     end process;
+
+    --
     
     -- Main control FSM
-    process(clk_in)
+    process(pxl_clk)
         variable temp_vec : vec3d;
         variable screen_x, screen_y : signed(31 downto 0);
     begin
-        if rising_edge(clk_in) then
+        if rising_edge(pxl_clk) then -- maybe change to rising_edge(pxl_clk)?
             if reset = '1' then
                 state <= IDLE;
                 tri_counter <= (others => '0');
