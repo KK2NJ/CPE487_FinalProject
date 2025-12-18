@@ -14,7 +14,7 @@ Regular Tetrahedron, Cube, Regular Octahedron, Regular Dodecahedron, and Regular
 
 
 
-https://github.com/user-attachments/assets/f95fe228-66aa-4ba5-b639-8f1a5cd01082
+<video src="https://github.com/user-attachments/assets/f95fe228-66aa-4ba5-b639-8f1a5cd01082" width="640" controls muted></video>
 
 
 
