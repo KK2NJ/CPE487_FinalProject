@@ -36,6 +36,17 @@ The advantage of using a package here is that these datastructures are universal
 # File Hierarchy
 <img width="536" height="252" alt="Screenshot 2025-12-17 232814" src="https://github.com/user-attachments/assets/741ac360-c12e-457b-b295-976fc2be7c47" />
 
+## Responsibilities 
+
+### Karan Kapoor
+- Edited and created graphics_pkg.vhd, constraints_3.xdc, engine_3d.vhd, and trig_LUT.vhd
+- Edited platonic_rom.vhd
+- Contributed to GitHub repository
+
+### Mason Brewer
+- Edited graphics_pkg.vhd, constraints_3.xdc, engine_3d.vhd, and trig_LUT.vhd
+- Edited Main FSM and added Bresenham Line Algorithm
+- Contributed to GitHub repository
 
 ## Setup
 Download the following files from the repository to your computer:
@@ -56,3 +67,4 @@ Once you have downloaded the files, follow these steps:
      - "Auto Connect"
      - "Program Device"
 12. Program should appear on the screen
+3
