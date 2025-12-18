@@ -7,6 +7,16 @@ The goal of this project is to have different types of platonic solids rotating 
 # Types of Platonic Solids
 <img width="500" height="408" alt="Platonic_Solids_Transparent svg" src="https://github.com/user-attachments/assets/81fc0a8a-7815-41ac-bb00-8490dfba3f0b" />
 
+Ordered from left to right
+Regular Tetrahedron, Cube, Regular Octahedron, Regular Dodecahedron, and Regular Icosahedron
+
+# Video of Rotating Solids
+
+
+
+https://github.com/user-attachments/assets/f95fe228-66aa-4ba5-b639-8f1a5cd01082
+
+
 
 
 ## Setup
