@@ -36,6 +36,51 @@ The advantage of using a package here is that these datastructures are universal
 # File Hierarchy
 <img width="536" height="252" alt="Screenshot 2025-12-17 232814" src="https://github.com/user-attachments/assets/741ac360-c12e-457b-b295-976fc2be7c47" />
 
+## Main State Machine from engine_3d.vhd
+<img width="671" height="861" alt="RenderingFSM drawio" src="https://github.com/user-attachments/assets/5c8678fd-eb26-4cfc-aade-76b68c73da78" />
+
+
+## Rotation (How the 3D shape spins)
+
+The 3D rotation is performed inside `engine_3d.vhd` during the **CALC_EDGE** stage of the main finite state machine. For every edge of the current solid, the engine takes two 3D endpoints (`v0_3d` and `v1_3d`) from `platonic_rom`, rotates them in 3D space, then projects the rotated points to 2D framebuffer coordinates before drawing the line with Bresenham.
+
+### Where rotation happens in the code
+Rotation math is implemented in the FSM state:
+
+- `when CALC_EDGE =>`
+
+This state computes a rotated version of each endpoint using sine/cosine values from `trig_lut`.
+
+### Z-axis rotation (spin in the XY plane)
+For a 3D point `(x, y, z)`, Z rotation is applied first:
+
+- `x' = x*cos(θ) - y*sin(θ)`
+- `y' = x*sin(θ) + y*cos(θ)`
+- `z' = z`
+
+In VHDL this appears as:
+
+
+xz0 := fixed_mult(v0_3d.x, cos_z) - fixed_mult(v0_3d.y, sin_z);<br>
+yz0 := fixed_mult(v0_3d.x, sin_z) + fixed_mult(v0_3d.y, cos_z);<br>
+zz0 := v0_3d.z;
+<img width="682" height="137" alt="image" src="https://github.com/user-attachments/assets/3b3b12a2-19bb-4d4f-9ac2-813fd2b26f2a" />
+# Sine and Cosine
+Sine and cosine are not natively supported in vhdl and there is no simple algebraic solution to these equations. Even in C++, sine and cosine functions are approxiamted using specialized alogrithims and lookup tables (albiet with much better precision). Our trig_lut entity, holds a pregenerated array for a lookup table for sine and cosine we generated using excel.
+In the Rotation Matrix Generator process sine and cosine are only updated in a process where a change in theta triggers, improving performance.
+
+
+
+# Matrix Multiplication
+Takeing the 4x4 rotational matrix we generated and multiplying it by the a 4x1 matrix of any given point coordinate returns the new rotated point coordinates. Matrix multiplication is the result of the sum of the dot product of each column in the 4x1 matrix (1D matrix is just a vector) (x,y,z) with each row. 
+<img width="926" height="487" alt="image" src="https://github.com/user-attachments/assets/58091e89-3d7e-4a75-819a-26d6d040595a" />
+
+## Projection
+Now we can use our modified vector to project itself onto the camera view. A 2D visualization of projection is this. 
+<img width="346" height="451" alt="image" src="https://github.com/user-attachments/assets/141b8853-117a-4723-aa4a-e49f0002f8e0" />
+The difference is where are doing a 3d vector onto a 2d plane. For this we can again create a matrix and use matrix multiplication. This matrix below is the projection matrix which uses a scale factor S for POV adjustment. f is the distance of the far clipping plane and n is the near clipping plane. That function normalizes the y and z coordinates to a the range between them.
+<img width="335" height="227" alt="image" src="https://github.com/user-attachments/assets/e1d5a971-516b-4f75-9a84-01852fe52e5d" />
+
 ## Responsibilities 
 
 ### Karan Kapoor
@@ -67,4 +112,10 @@ Once you have downloaded the files, follow these steps:
      - "Auto Connect"
      - "Program Device"
 12. Program should appear on the screen
-3
+### Difficulties
+- Getting multiplication to properly work
+- Understanding unique data types that could work in vhdl
+- Changing floating point values to IEEE standards
+- Getting values constrained to the memory we were constrained to on the board
+- Understanding different software solutions that would work with the board e.g. BRAM vs On-the-fly Pixel math and CORDIC algorithm vs sin-cos-LUT
+- Optimizing Matrix Multiplication with nested for loops
