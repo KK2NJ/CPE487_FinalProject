@@ -12,11 +12,29 @@ Regular Tetrahedron, Cube, Regular Octahedron, Regular Dodecahedron, and Regular
 
 # Video of Rotating Solids
 
+https://github.com/user-attachments/assets/f95fe228-66aa-4ba5-b639-8f1a5cd01082
 
 
-<video src="https://github.com/user-attachments/assets/f95fe228-66aa-4ba5-b639-8f1a5cd01082" width="640" controls muted></video>
+## Required Hardware / Attachments
 
+**Board:** Digilent Nexys A7 (or equivalent FPGA board used in class)  
+**Display:** VGA monitor (expects 800×600 @ 60 Hz timing from `vga_sync.vhd`)  
+**Connections:**
+- VGA cable from Nexys to the monitor
+- USB cable for power/programming
+- HDMI Cable to connect VGA cable
+**Pins/IO:** All FPGA ↔ VGA and button pin mappings are handled in `constraints.xdc`.
 
+## Creation of Solids
+Any point can be definied in 3d space using 3 coordinates (x,y,z). 
+A surface can then defined using 3 non colinear points. 
+For a cube, it has 6 square surfaces. Each square surface requires 2 triangular surfaces to create. Creating a total of 12 faces. 
+In our graphics package we created custom datastructures for these.
+<img width="690" height="537" alt="image" src="https://github.com/user-attachments/assets/d1388e2d-21b5-497c-b1b9-eeb87746999e" />
+The advantage of using a package here is that these datastructures are universally defined for all entities to use, while keeping the main clean.
+
+# File Hierarchy
+<img width="536" height="252" alt="Screenshot 2025-12-17 232814" src="https://github.com/user-attachments/assets/741ac360-c12e-457b-b295-976fc2be7c47" />
 
 
 ## Setup
