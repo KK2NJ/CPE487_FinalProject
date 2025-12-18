@@ -141,7 +141,7 @@ begin
     begin
         if rising_edge(clk) then
 
-            -- vsync falling edge = start of vblank pulse (your vga_sync uses active-low)
+            -- vsync falling edge = start of vblank pulse 
             start_frame <= '0';
             if (prev_vsync = '1') and (vsync = '0') then
                 start_frame <= '1';
