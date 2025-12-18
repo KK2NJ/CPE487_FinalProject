@@ -263,7 +263,6 @@ begin
                     if (cur_x = bx1) and (cur_y = by1) then
                         state <= NEXT_EDGE;
                     else
-                        -- IMPORTANT: update err with a variable so both X/Y steps can apply correctly
                         errv := line_err;
                         e2 := 2 * errv;
 
