@@ -36,6 +36,23 @@ The advantage of using a package here is that these datastructures are universal
 # File Hierarchy
 <img width="536" height="252" alt="Screenshot 2025-12-17 232814" src="https://github.com/user-attachments/assets/741ac360-c12e-457b-b295-976fc2be7c47" />
 
+#### Inputs
+- clk_in: 100 MHz system clock input from the Nexys A7.<br>
+- btn0: Start/Pause control.
+ When paused, the engine clears the framebuffer so the VGA output is black. When running, the engine renders the current solid each frame.
+-btnl: Next solid (edge-detected press). Cycles through the Platonic solids in order (e.g., tetra → cube → octa → dodeca → icosa).
+- btnr: Reset solid selection (edge-detected press). Returns to the tetrahedron.
+#### Outputs
+- VGA_red[3:0]: 4-bit red intensity to the VGA DAC.
+
+- VGA_green[3:0]: 4-bit green intensity to the VGA DAC.
+
+- VGA_blue[3:0]: 4-bit blue intensity to the VGA DAC.
+
+- VGA_hsync: Horizontal sync signal for VGA timing (from vga_sync.vhd).
+
+- VGA_vsync: Vertical sync signal for VGA timing (from vga_sync.vhd).
+
 ## Main State Machine from engine_3d.vhd
 <img width="671" height="861" alt="RenderingFSM drawio" src="https://github.com/user-attachments/assets/5c8678fd-eb26-4cfc-aade-76b68c73da78" />
 
